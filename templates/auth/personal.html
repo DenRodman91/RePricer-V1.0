@@ -1,0 +1,43 @@
+{% extends 'auth/base_auth.html' %}
+
+{% block title%}
+SOF(t) - ПО споконойной силы, сильной души!
+{% endblock %}
+
+
+{% block body%}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/personal.css') }}">
+
+<div class="container">
+   <p>Привет, {{ data.comp_name }}!</p>
+    <p>Ваш email: {{ data.email }}</p>
+    <div class="row">
+        <div class="col-lg-4 col-md-6 col-12">
+            <div class="colonka1">
+                <div style="display: flex;"><button>В рублях</button><button>В штуках</button></div>
+                <h5>Данные на сегодня</h5>
+                <p>Заказали: {{ data.sales }}</p>
+                <p>Выкупили: {{ data.orders }} </p>
+                <p>Возвратов: {{ data.unorders }} </p>
+                <div style="border: 1px solid;"></div>
+                <p>Остаток на складах (штук): {{data.last}} </p>
+                <p>Товара хватит на (дней): {{int(data.days)}} </p>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-12">
+            <div class="colonka2">
+                <h5>Статусы</h5>
+                <p>Статус оплаты: {{'Активно' if data.payment == '1' else 'НЕ активно'}}</p>
+                <p>Тариф: {{data.tarif}}</p> 
+                <p>Оплачено до: {{ data.pay_data }}</p>
+                <p>Артикулов: {{ data.art }} </p>
+                <div style="border: 1px solid;"></div>
+                <p>Остаток на складах (штук): {{ data.last }}</p>
+                <p>Товара хватит на (дней): {{int(data.days)}} </p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
