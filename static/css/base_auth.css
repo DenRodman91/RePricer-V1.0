@@ -1,0 +1,117 @@
+.sidebar {
+    width: 80px;
+    height: 100vh;
+    position: fixed;
+    background-color: #f8f9fa;
+    transition: width 1s;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Выравниваем содержимое по правому краю */
+    overflow: hidden; /* Предотвращаем выход контента за пределы sidebar */
+}
+
+.sidebar:hover {
+    width: 250px;
+}
+
+
+
+.icon {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    color: #000;
+    transition: padding-right 1s; /* Анимируем padding справа для плавности */
+}
+
+.icon i { /* Иконки */
+    min-width: 20px; /* Установите минимальную ширину, чтобы иконки не сжимались */
+    text-align: right;
+    transition: margin-right 1s; /* Анимируем отступ справа для иконок */
+}
+
+.sidebar:hover .icon i {
+    margin-right: auto; /* Автоматический отступ справа, чтобы иконки оставались у правого края */
+}
+
+.icon-text {
+    display: none;
+    white-space: nowrap; /* Убедитесь, что текст не переносится на новую строку */
+}
+
+.sidebar:hover .icon-text {
+    display: block;
+}
+.sidebar {
+    width: 50px; /* Исходная ширина */
+    height: 100vh;
+    position: fixed;
+    background-color: #f8f9fa;
+    transition: width 1s;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Выравниваем содержимое по правому краю */
+    overflow: hidden; /* Предотвращаем выход контента за пределы sidebar */
+}
+
+.sidebar:hover {
+    width: 250px; /* Ширина при наведении */
+}
+
+.icon a {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    color: #000;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: transform 1s;
+    width: 100%;
+}
+
+.icon i {
+    min-width: 20px;
+    margin-right: 10px; /* Отступ между иконкой и текстом */
+}
+
+.icon-text {
+    display: none;
+}
+
+.sidebar:hover .icon-text {
+    display: inline;
+    margin-left: 5px;
+}
+.sidebar-toggle {
+    display: none; /* Скрываем кнопку по умолчанию */
+    position: fixed; /* Фиксируем кнопку */
+    top: 10px;
+    right: 10px;
+    z-index: 1000; /* Гарантируем, что кнопка будет над другими элементами */
+}
+
+/* Адаптируем sidebar и кнопку для маленьких экранов */
+@media (max-width: 767px) {
+    .sidebar {
+        width: 0; /* Скрываем sidebar */
+        overflow: hidden;
+        transition: width 1s;
+    }
+
+    /* Показываем кнопку на маленьких экранах */
+    .sidebar-toggle {
+        display: block;
+    }
+
+    /* Управляем состоянием sidebar через класс .active */
+    .sidebar.active {
+        width: 250px;
+        display: inline;
+        margin-left: 5px;
+    }
+    .sidebar .icon-text {
+        display: block;
+    }
+}
+
