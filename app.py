@@ -28,7 +28,7 @@ from function.payment import payment_first as pf
 
 from flask_socketio import SocketIO, emit
 
-bot = telebot.TeleBot("6549083633:AAFJyBrN9wnCAl03aWSW8jsrm3iQ1316Csw")
+bot = telebot.TeleBot("YOUR_TOKEN")
 application = Flask(__name__)
 application.config.from_object('config.Config')
 socketio = SocketIO(application, async_mode='eventlet', message_queue='redis://localhost:6379/0')
