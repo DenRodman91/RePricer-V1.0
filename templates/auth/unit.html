@@ -1,0 +1,201 @@
+{% extends 'auth/base_auth.html' %}
+
+{% block title %}
+SOF(t) - ПО споконойной силы, сильной души!
+{% endblock %}
+
+{% block body %}
+    {% if error %}
+    <h1>Не добавлена таблица себестоимости! Добавьте ее на вкладке <a href="/mydata">Кабинеты</a></h1>
+    {% else %}
+    <!-- Подключение DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+    <!-- Подключение DataTables Resizable Columns CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/colreorder/1.5.4/css/colReorder.dataTables.min.css">
+    <style>
+        body {
+            overflow-x: auto; /* Включаем горизонтальную прокрутку для всего документа */
+        }
+        .dataTables_wrapper {
+            width: 100%;
+            overflow-x: scroll; /* Включаем горизонтальную прокрутку для контейнера таблицы */
+        }
+        table {
+            width: 100%; /* Ширина таблицы будет адаптироваться по ширине контейнера */
+            min-width: 2000px; /* Минимальная ширина таблицы для лучшей адаптации */
+        }
+        td.editable {
+            cursor: pointer;
+        }
+        td.modified {
+            background-color: yellow;
+        }
+        td.invalid-input {
+            background-color: red;
+        }
+    </style>
+
+    <button id="save-changes" class="btn btn-primary">Сохранить изменения</button>
+
+    <table id="example" class="display">
+        <thead>
+            <tr>
+                <th>Выбор</th>
+                <th>Фото</th>
+                {% for col in df.columns.to_list() %}
+                    {% if col in ['Комиссия'] %}
+                    <th id="show-col" style="display: none;">{{ col }}</th>   
+                    {% elif col == 'photos_0_big' %} 
+                    <th style="display: none;">{{ col }}</th>
+                    {% else %}
+                    <th>{{ col }}</th>
+                    {%endif%}  
+                {% endfor %}
+                <th>Мин. цена (расчет)</th> <!-- Add this header for the calculated column -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in df.itertuples(index=False) %}
+            <tr data-article="{{ row['_0'] }}"> <!-- Assuming `article` is a unique identifier for the row -->
+                <td><input type="checkbox" name="" id=""></td>
+                <td><img src="{{row.photos_0_big}}" alt="фото" style="height: 40px; width: 40px;"></td>
+                {% for idx, value in enumerate(row) %}
+                    {% set column_name = df.columns[idx] %}
+                    {% if column_name == 'photos_0_big' %} 
+                        <td style="display: none;">{{ value }}</td>
+                    {% else %}
+                        {% if column_name in ['Комиссия'] %}
+                            <td id="show-col" style="display: none;">{{ value }}</td>                    
+                        {% elif column_name in ['Расходы внутр.', 'Мин. маржа, %', 'Себестоимость'] %}
+                            <td class="editable" data-column="{{ column_name }}">{{ value }}</td>
+                        {% else %}
+                            <td>{{ value }}</td>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                <td class="price-new"></td> <!-- Add this cell for the calculated column -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Подключение jQuery -->
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <!-- Подключение DataTables JS -->
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+    <!-- Подключение DataTables ColReorder JS -->
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/colreorder/1.5.4/js/dataTables.colReorder.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var table = $('#example').DataTable({
+                drawCallback: function() {
+                    updateCalculatedFields();
+                    addEditableHandlers();
+                }
+            });
+            
+            // Отслеживаем изменения
+            var modifiedRows = [];
+
+            // Функция добавления возможности редактирования ячеек
+            function addEditableHandlers() {
+                $('td.editable').off('click').on('click', function() {
+                    var cell = $(this);
+                    var currentText = cell.text();
+                    var input = $('<input>', {
+                        type: 'number',
+                        class: 'editable-input',
+                        value: currentText
+                    });
+
+                    input.on('blur', function() {
+                        // Проверка на корректный ввод числа
+                        if (!isNaN(input.val()) && input.val() !== '') {
+                            if (input.val() !== currentText) {
+                                cell.addClass('modified').removeClass('invalid-input').text(input.val());
+                                updateCalculatedFields();
+                                table.cell(cell).data(input.val()).draw();
+
+                                // Отмечаем измененные строки и столбцы
+                                var row = cell.closest('tr');
+                                var article = row.data('article');
+                                var column = cell.data('column');
+                                var modifiedCell = modifiedRows.find(item => item.article === article);
+                                if (modifiedCell) {
+                                    modifiedCell[column] = input.val();
+                                } else {
+                                    var newModifiedCell = { article: article };
+                                    newModifiedCell[column] = input.val();
+                                    modifiedRows.push(newModifiedCell);
+                                }
+                            } else {
+                                cell.text(currentText);
+                            }
+                        } else {
+                            alert('Please enter a valid number.');
+                            cell.addClass('invalid-input');
+                        }
+                    });
+
+                    input.on('keydown', function(event) {
+                        if (event.key === 'Enter') {
+                            input.blur();
+                        } else if (event.key === 'Escape') {
+                            cell.text(currentText);
+                        }
+                    });
+
+                    cell.empty().append(input);
+                    input.focus();
+                });
+            }
+
+            // Функция обновления вычисляемых полей
+            function updateCalculatedFields() {
+                $('#example tbody tr').each(function() {
+                    var row = $(this);
+                    var cells = row.find('td');
+                    var sebest = parseFloat(cells.eq(getIndex('Себестоимость')).text()) || 0;
+                    var minMar = parseFloat(cells.eq(getIndex('Мин. маржа, %')).text()) || 0;
+                    var postoyannieRaskhody = parseFloat(cells.eq(getIndex('Расходы внутр.')).text()) || 0;
+                    var coms = parseFloat(cells.eq(getIndex('Комиссия')).text()) || 0;
+                    var log = parseFloat(cells.eq(getIndex('Логистика')).text())  || 0;
+                    var hr = parseFloat(cells.eq(getIndex('Хранение')).text())  || 0;
+                    var minPrice = ((sebest+postoyannieRaskhody+ log + hr)*(1+minMar/100))/(1-coms/100);
+                    cells.last().text(minPrice.toFixed(1));
+                });
+            }
+
+            function getIndex(columnName) {
+                return $('#example thead th').filter(function() {
+                    return $(this).text() === columnName;
+                }).index();
+            }
+
+            // Инициализация вычисляемых полей при загрузке
+            updateCalculatedFields();
+
+            // Добавление обработчиков редактирования на первой отрисовке
+            addEditableHandlers();
+
+            // Обработчик кнопки "Сохранить изменения"
+            $('#save-changes').on('click', function() {
+                
+                if (modifiedRows.length > 0) {
+                    // Подтверждение перед отправкой данных
+                    if (confirm('Вы уверены, что хотите сохранить изменения?')) {
+                        // Отправка измененных данных через веб-сокет
+                        socket.emit('send_message', modifiedRows);
+                        modifiedRows = [];  // Очистка массива после отправки данных
+                    } else {
+                        alert('Изменения не были сохранены.');
+                    }
+                } else {
+                    alert('Нет изменений для сохранения.');
+                }
+            });
+        });
+    </script>
+    {% endif %}
+{% endblock %}
