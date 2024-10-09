@@ -1,0 +1,303 @@
+{% extends 'auth/base_auth.html' %}
+
+{% block title %}
+Настройка репрайсера
+{% endblock %}
+
+{% block body %}
+{% if error %}
+<h1>Не добавлена таблица себестоимости! Добавьте ее на вкладке <a href="/mydata">Кабинеты</a></h1>
+{% else %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+
+<div class="container text-center">
+    <!-- Хлебные крошки -->
+    <nav aria-label="breadcrumb" class="d-inline-block">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active" id="step1"><a href="#">Выбор артикулов</a></li>
+            <li class="breadcrumb-item" id="step3"><a href="#" >Настройка метрик</a></li>
+        </ol>
+    </nav>
+</div>
+<div id="first-page" style="display: block;">
+    <div class="sticky-filters" id = "sticky-filters">
+    <div class="row" style="margin: 10px;">
+        <div class="col-2">
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Кабинет
+                </button>
+                <div class="dropdown-menu">
+                    <input class="form-control" id="searchInput" type="text" placeholder="Поиск...">
+                    <ul id="list">
+                        {% for sel in df['Кабинет'].unique() %}
+                        <li><div style="display: flex;"><p style="margin-right: 5px;">{{ sel }}</p><input type="checkbox" name="" id=""></div></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+       
+        <div class="col-3">
+            <input type="text" class="form-control" id="name-filter" placeholder="Название или Артикул">
+        </div>
+        
+    </div>
+        <div class="container">
+            <button id="select-all" class="btn btn-primary">Выбрать все</button>
+            <button id="deselect-all" class="btn btn-secondary">Снять все</button>
+            <button id="reset-filters" class="btn btn-warning">Сбросить все фильтры</button>
+            <h5 id="quantityART">Выбрано для настройки 0 Артикулов</h5>
+            <div class="row">
+                <div class="col-1" style="border: 1px solid;">
+                    <p class="text-center">Выбор</p>
+                </div>
+                <div class="col-1" style="border: 1px solid;">
+                    <p class="text-center">Фото</p>
+                </div>
+                <div class="col-1" style="border: 1px solid;">
+                    <p class="text-center">Артикул МП</p>
+                </div>              
+                <div class="col-3" style="border: 1px solid;">
+                    <p class="text-center">Название</p>
+                </div>
+                <div class="col-1" style="border: 1px solid;">
+                    <p class="text-center">Цвет</p>
+                </div>
+                <div class="col-1" style="border: 1px solid;">
+                    <p class="text-center">Бренд</p>  
+                </div>
+                <div class="col-1" style="border: 1px solid;">
+                    <p class="text-center">Цена руб/ Маржа %</p>  
+                </div>
+                <div class="col-1" style="border: 1px solid;">
+                    <p class="text-center">Стратегия</p>  
+                </div>
+                <div class="col-1" style="border: 1px solid;">
+                    <p class="text-center">Изменение продаж</p>  
+                </div>
+                <div class="col-1" style="border: 1px solid;">
+                    <p class="text-center">Изменение маржи</p>  
+                </div>
+
+            </div>
+        </div>
+    </div>
+            <div style="border: 1px solid;">
+            {% for index, row in df.iterrows() %}
+            <div class="row rowlist" data-artvb="{{ row['Артикул МП'] }}" data-artseller="{{ row['Артикул МП'] }}" data-brand="{{ row['Бренд'] }}" data-name="{{ row['Название'] }}" > 
+                <div class="col-1 chchchch">
+                    <input type="checkbox" name="{{ row['Название'] }}" id="{{ row['Название'] }}" >
+                </div>
+                <div class="col-1">
+                    <img src="{{ row['photos_0_big'] }}" class="card-img-top" alt="..." >
+                </div>
+                <div class="col-1">
+                    <p class="card-text">{{ row['Артикул МП'] }}</p>  
+                </div>              
+                <div class="col-3">
+                    <a href="#" class="btn-open-modal" data-toggle="modal" data-target="#myModal" data-photo="{{ row['photos_0_big'] }}" data-articul="{{ row['Артикул МП'] }}" data-nazvanie="{{ row['Название'] }}" data-brand="{{ row['Бренд'] }}">{{ row['Название'] }}</a>
+                </div>
+                <div class="col-1">
+                    <p class="card-text">Цвет</p>
+                </div>
+                <div class="col-1">
+                    <p class="card-text">{{ row['Бренд'] }}</p>
+                </div>
+                <div class="col-1">
+                    <p class="card-text">{{ row['Цена с СПП'] }}</p>  
+                    <p>{{ row['Маржа сейчас'] }}</p>
+                </div>
+                <div class="col-1">
+                    <p class="card-text">{{ row['Стратегия'] if not pd.isna(row['Стратегия']) else 'НЕ настроено' }}</p>                </div>
+                <div class="col-1">
+                    {% if row['Тренд'] == 1 %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" style="color:green" fill="currentColor" class="bi bi-graph-up" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm14.817 3.113a.5.5 0 0 1 .07.704l-4.5 5.5a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61 4.15-5.073a.5.5 0 0 1 .704-.07"/>
+                      </svg>  
+                    {% else %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" style="color:red" fill="currentColor" class="bi bi-graph-down" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm14.817 11.887a.5.5 0 0 0 .07-.704l-4.5-5.5a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61 4.15 5.073a.5.5 0 0 0 .704.07"/>
+                      </svg>
+                    {%endif%}
+                </div>
+                <div class="col-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" style="color:red" fill="currentColor" class="bi bi-graph-down" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm14.817 11.887a.5.5 0 0 0 .07-.704l-4.5-5.5a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61 4.15 5.073a.5.5 0 0 0 .704.07"/>
+                      </svg>
+                </div>
+            </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно -->
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-3">
+                    <img src="" alt="" id="modal-photo" style="max-width: 300px; max-height: 500px;">
+                </div>
+                <div class="col">
+                    <p id="modal-nazvanie"></p>
+                    <p id="modal-brand"></p>
+                    <p id="modal-artwb"></p>
+                </div>
+            </div>
+            
+            <p id="modal-nazvanie"></p>
+            <p id="modal-brand"></p>
+        </div>
+    </div>
+</div>
+
+    <div class="container">
+        <div id="second-page" style="display: none;">
+            <div class="row" >
+                <div class="col-4">
+                    <h4>Выберите ваш уровень</h4>
+                    <label for="newuser">Начинающий</label>
+                    <input type="radio" name="userType" id="newuser" value="newuser" checked>
+                    <hr>
+                    <label for="olduser">Профи</label>
+                    <input type="radio" name="userType" id="olduser" value="olduser">
+                </div>
+                <div class="col-3 offset-md-9">
+                    <a style=" padding: 10px; border-radius: 50px; border: 1px solid; border-color: brown; background-color: chocolate; " href="#" class="btn-open-modal2" data-toggle="modal2" data-target="#myModal2">Показать выбранные артикула</a>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 20px;">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-4" style="border: 1px solid;">
+                            <p>Стратегия</p>
+                            <select id="strategy-select">
+                                <option value="individual">Индивидуальные параметры</option>
+                                <option value="max_profit">Максимализация прибыли</option>
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <div class="row">
+                                <div class="col-9" style="border: 1px solid;">
+                                    <p>Выбранные метрики</p>
+                                    <div id="selected-metrics"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1"></div>
+                        <div class="col-3" style="border: 1px solid;">
+                            <p>Информационное окошко для справок</p>
+                            <div id="info-box" style="max-height: 400px; overflow-y: scroll;">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-9 userlvl" style="border: 1px solid; display:none;">
+                    <p>Метрики</p>
+                    <div class="metrics-list" >
+                        <ul>
+                            <li><input type="checkbox" name="metr" id="sdp"><label for="sdp">СДП</label><span class="info" data-info="СДП: Описание метрики">?</span></li>
+                            <!-- <li><input type="checkbox" name="metr" id="sdp_ret"><label for="sdp_ret">СДП с учетом станд % возвратов</label><span class="info" data-info="СДП с учетом: Описание метрики">?</span></li> -->
+                            <li><input type="checkbox" name="metr" id="kdz_mp"><label for="kdz_mp">КДЗ МП</label><span class="info" data-info="КДЗ МП: Описание метрики">?</span></li>
+                            <!-- <li><input type="checkbox" name="metr" id="ostatki_mp"><label for="ostatki_mp">Остатки МП</label><span class="info" data-info="Остатки МП: Описание метрики">?</span></li> -->
+                            <!-- <li><input type="checkbox" name="metr" id="provoly"><label for="provoly">Провалы</label><span class="info" data-info="Провалы: Описание метрики">?</span></li> -->
+                            <li><input type="checkbox" name="metr" id="kdn"><label for="kdn">КДН</label><span class="info" data-info="КДН: Описание метрики">?</span></li>
+                            <!-- <li><input type="checkbox" name="metr" id="spp"><label for="spp">СПП</label><span class="info" data-info="СПП: Описание метрики">?</span></li> -->
+                            <!-- <li><input type="checkbox" name="metr" id="plan_margin"><label for="plan_margin">План по марже</label><span class="info" data-info="План по марже: Описание метрики">?</span></li> -->
+                            <!-- <li><input type="checkbox" name="metr" id="sales_strategy"><label for="sales_strategy">Стратегия распродаж</label><span class="info" data-info="Стратегия распродаж: Описание метрики">?</span></li>
+                            <li><input type="checkbox" name="metr" id="company_fixed_costs"><label for="company_fixed_costs">Доля постоянных расходов компании в %</label><span class="info" data-info="Доля расходов: Описание метрики">?</span></li>
+                            <li><input type="checkbox" name="metr" id="current_price"><label for="current_price">Текущая цена</label><span class="info" data-info="Текущая цена: Описание метрики">?</span></li>
+                            <li><input type="checkbox" name="metr" id="start_day_price"><label for="start_day_price">Цена на начало дня</label><span class="info" data-info="Цена на начало дня: Описание метрики">?</span></li>
+                            <li><input type="checkbox" name="metr" id="costs_mp"><label for="costs_mp">Косты МП</label><span class="info" data-info="Косты МП: Описание метрики">?</span></li>
+                            <li><input type="checkbox" name="metr" id="logistics"><label for="logistics">Логистика</label><span class="info" data-info="Логистика: Описание метрики">?</span></li>
+                            <li><input type="checkbox" name="metr" id="cost_price"><label for="cost_price">Себестоимость</label><span class="info" data-info="Себестоимость: Описание метрики">?</span></li> -->
+                            <!-- <li><input type="checkbox" name="metr" id="margin"><label for="margin">Маржа руб., %</label><span class="info" data-info="Маржа: Описание метрики">?</span></li> -->
+                            <!-- <li><input type="checkbox" name="metr" id="discount_percentage"><label for="discount_percentage">% скидки</label><span class="info" data-info="% скидки: Описание метрики">?</span></li> -->
+                            <!-- <li><input type="checkbox" name="metr" id="price_before_discount"><label for="price_before_discount">Цена до скидки</label><span class="info" data-info="Цена до скидки: Описание метрики">?</span></li> -->
+                            <!-- <li><input type="checkbox" name="metr" id="price_with_spp"><label for="price_with_spp">Цена с СПП</label><span class="info" data-info="Цена с СПП: Описание метрики">?</span></li> -->
+                            <!-- <li><input type="checkbox" name="metr" id="category_positions_keys"><label for="category_positions_keys">Позиции Категории/Ключи</label><span class="info" data-info="Позиции Категории: Описание метрики">?</span></li> -->
+                            <!-- <li><input type="checkbox" name="metr" id="competitor_data"><label for="competitor_data">Данные конкурентов</label><span class="info" data-info="Данные конкурентов: Описание метрики">?</span></li> -->
+                            <!-- <li><input type="checkbox" name="metr" id="reviews_and_ratings"><label for="reviews_and_ratings">Отзывы и рейтинги</label><span class="info" data-info="Отзывы и рейтинги: Описание метрики">?</span></li> -->
+                            <!-- <li><input type="checkbox" name="metr" id="en_route"><label for="en_route">В Пути</label><span class="info" data-info="В Пути: Описание метрики">?</span></li> -->
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <p>Доп. Парамеиры</p>
+                        <ul>
+                            <li><input type="checkbox" id="beautiful_price"><label for="beautiful_price">Красивая цена</label><span class="info" data-info="Красивая цена: Описание метрики">?</span> <input type="number" name="roundPriceInput" id="roundPriceInput" style="display: none;"></li>
+                            <li><input type="checkbox"  id="participation_in_promotions"><label for="participation_in_promotions">Участие в акциях</label><span class="info" data-info="Участие в акциях: Описание метрики">?</span></li>
+                        </ul>
+                </div>
+            </div>
+            <div class="row" name="set_sale" style="display: none;">
+                <div class="col-12">
+                    <div class="art">
+                        <div class="row">
+                            <div class="col-1" >Фото</div>
+                            <div class="col-5" >Название</div>
+                            <div class="col-2" >Артикул МП</div>
+                            <div class="col-1" >Участие</div>
+                            <div class="col-2" >Параметры</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div id="art_sale" style="border: 1px solid; padding: 10px; max-height: 300px; overflow-y: scroll; margin-bottom: 100px;"  >
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- Модальное окно -->
+<div id="myModal2" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="modal-body">
+            <div class="row" id="selected-items">
+                <!-- Список выбранных артикулов будет добавлен здесь -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="myModal3" class="modal">
+    <div class="modal-content3">
+        <span class="close3">&times;</span>
+        <div class="modal-body3">
+            <div class="container">
+                <div class="row">
+                    <h6>Елси вы уверены, что вы правильно выбрали Артикулы и настрйоки по ним, то нажимайте подтвердить, если есть сомнения, пожалуйста проверьте Артикула (кнопка назад, и проверьте метрики)!</h6>
+                </div>
+                <div class="row" id="selected-items3">
+                    <div class="col-2 offset-md-3" id="cl"><button type="button">Перепроверить</button></div>
+                    <div class="col-2 offset-md-1"><button type="submit" id="sendButton">Подтвердить</button></div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div class="container-fluid fixed-bottom text-center mb-4">
+    <button type="button" class="btn btn-primary btn-lg rounded-pill mr-3" id="back-btn">Назад</button>
+    <button type="button" class="btn btn-primary btn-lg rounded-pill " id="next-btn">Далее</button>
+    <button type="button" class="btn btn-outline-success rounded-pill btn-open-modal3" id="ready-btn">Success</button>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+<script>
+
+</script>
+{% endif %}
+{% endblock %}
