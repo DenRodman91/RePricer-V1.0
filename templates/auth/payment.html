@@ -1,0 +1,36 @@
+{% extends 'auth/base_auth.html' %}
+
+{% block title%}
+SOF(t) - ПО споконойной силы, сильной души!
+{% endblock %}
+
+
+{% block body%}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/payment.css') }}">
+<div class="pricing-container">
+    <div class="pricing-column" id="tarif junior" onclick="openModal('junior')">
+        <h2>Младший брат</h2>
+        <p>Описание тарифа Младший брат. На этом тарифе мы будем начинать с азов, научу тебя всему чем сам умею.</p>
+    </div>
+    <div class="pricing-column" id="tarif classmate" onclick="openModal('classmate')">
+        <h2>Одноклассник</h2>
+        <p>Описание тарифа Одноклассник. А тут мы с тобой наравне, будем работать сообша и усножать в столбик твою прибыль.</p>
+    </div>
+    <div class="pricing-column" id="tarif conor" onclick="openModal('conor')">
+        <h2>КОНОР МАКДОНАЛЬДС</h2>
+        <p>Описание тарифа КОНОР МАКДОНАЛЬДС. Бля чел, мне стоит опасаться?......</p>
+    </div>
+</div>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 id="modal-title"></h2>
+        <p id="tarif"></p>
+        <input type="text" id="input-field" placeholder="Введите данные">
+        <button onclick="submitData()">Отдать и ничего не требовать в замен</button>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/payment.js') }}"></script>
+
+{% endblock %}
