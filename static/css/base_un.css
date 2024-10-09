@@ -1,0 +1,18 @@
+.nav-link {
+    border-radius: 50px;
+    transition: background-color 0.3s, color 0.3s; /* Добавляем плавный переход */
+    border: 1px solid;
+    margin-right: 5px;
+}
+.nav-link:hover {
+    background-color: #008732; /* Цвет фона при наведении */
+    color: rgb(255, 255, 255); /* Цвет текста при наведении */
+    text-decoration: none; /* Убираем подчеркивание при наведении */
+}
+.nav-link.active {
+    background-color: #ff0000; /* Или любой другой цвет, который вы хотите использовать для активной ссылки */
+    font-weight: bold;
+}
+.footer {
+    margin-top: 100%; /* Футер автоматически перемещается вниз */
+}
