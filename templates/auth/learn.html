@@ -1,0 +1,114 @@
+{% extends 'auth/base_auth.html' %}
+
+{% block title%}
+SOF(t) - ПО споконойной силы, сильной души!
+{% endblock %}
+
+
+{% block body%}
+
+<div class="container">
+    <div class="row mt-2">
+        <div class="col-6 text-center">
+            <button type="button" style="border: 1px; border-radius: 30px;" onclick="document.getElementById('text').style.display = 'block';document.getElementById('video').style.display = 'none' "> Текстовое описание</button>
+        </div>
+        <div class="col-6 text-center">
+            <button type="button" style="border: 1px; border-radius: 30px;" onclick="document.getElementById('video').style.display = 'block';document.getElementById('text').style.display = 'none' "> Видео инструкция</button>
+        </div>
+    </div>
+    <div id="video">
+        <div class="row" style="margin-top: 20px;">
+            <div class="col text-center">
+                <h4>Обучающее видео</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-3 col-md-6 col-s-12">
+                <div onclick="open_modal(this)">
+                    <div class="card">
+                        <iframe width="100%" src="https://www.youtube.com/embed/XmtiNajqbnI?si=Tzq38mho0hTE56nc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        <h5>Обучалка 1</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 col-s-12">
+                <div onclick="open_modal(this)">
+                    <div class="card">
+                        <iframe width="100%" src="https://www.youtube.com/embed/XmtiNajqbnI?si=Tzq38mho0hTE56nc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        <h5>Обучалка 2</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 col-s-12">
+                <div onclick="open_modal(this)">
+                    <div class="card">
+                        <iframe width="100%" src="https://www.youtube.com/embed/XmtiNajqbnI?si=Tzq38mho0hTE56nc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        <h5>Обучалка 3</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 col-s-12">
+                <div onclick="open_modal(this)">
+                    <div class="card">
+                        <iframe width="100%" src="https://www.youtube.com/embed/XmtiNajqbnI?si=Tzq38mho0hTE56nc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        <h5>Обучалка 4</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="text" style="display: none;">
+        <div class="row"></div>
+        <div class="row" style="margin-top: 20px;">
+            <div class="col text-center">
+                <h4>Текстовая инструкция</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-9">
+                <p>тут дохуя текста</p>
+            </div>
+            <div class="col-3">
+                <p>тут какая то структруа документа</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="modal fade" id="modal" tabindex="-1">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Видео</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                    <!-- Video and text will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function open_modal(element) {
+            // Get the iframe and h5 elements from the clicked card
+            var iframe = element.querySelector('iframe').cloneNode(true);
+            var h5 = element.querySelector('h5').cloneNode(true);
+            
+            // Get the modal body
+            var modalBody = document.getElementById('modal-body');
+            var modaltitle = document.getElementById('modal-title');
+            // Clear the modal body
+            modalBody.innerHTML = '';
+            
+            // Append the cloned iframe and h5 to the modal body
+            modalBody.appendChild(iframe);
+            modaltitle.appendChild(h5);
+            
+            // Show the modal
+            $('#modal').modal('show');
+        }
+    </script>
+{% endblock %}
