@@ -1,0 +1,103 @@
+{% extends 'auth/base_auth.html' %}
+
+{% block title%}
+МОИ ДАННЫЕ
+{% endblock %}
+
+
+{% block body%}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/mydata.css') }}">
+
+
+
+<div class="container">
+    <h3>Настройка ваших данных: Токены, кабинеты</h3>
+    <hr>
+    <div style="height: 20px;"></div>
+    <h6>Кабинеты</h6>
+    {% if cabinets %}
+    {% for cab in cabinets %}
+    <!-- <a href="/mydata/{{ cab.ip }}-{{ cab.cabinet }}">{{ cab.ip }} - {{ cab.cabinet }}</a><br> -->
+    <a href="/mydata/{{ cab.ip }}-{{ cab.cabinet }}" class="btn-custom">{{ cab.ip }} - {{ cab.cabinet }}</a><br><br>
+  {% endfor %}
+    {% else %}
+        <p style="color: red;">У вас пока не добавлены кабинеты</p>
+    {% endif %}
+
+    <button id="openModal">Добавить кабинет</button>
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <form id="addCabinetForm" method="post">
+            <label for="marketplace">Маркетплейс:</label>
+            <select id="marketplace" name="marketplace">
+                <option value="wildberries">Wildberries</option>
+                <option value="ozon" disabled>Ozon</option>
+            </select>
+            <label for="companyName">Название ИП:</label>
+            <input type="text" id="companyName" name="companyName" placeholder="Пятаев Павел Владимирович" oninput="checkInputs()">
+            <div>
+                <label for="inputContent">Контент:</label><br>
+                <input type="text" id="inputContent" name="inputContent" oninput="checkInputs()"><br>
+                <label for="inputPrice">Цена:</label><br>
+                <input type="text" id="inputPrice" name="inputPrice" oninput="checkInputs()"><br>
+                <label for="inputStats">Статистика:</label><br>
+                <input type="text" id="inputStats" name="inputStats" oninput="checkInputs()"><br><br>
+                <label for="inputAnus"> :</label><br>
+                <input type="text" id="inputAnus" name="inputAnus" oninput="checkInputs()"><br><br>
+                <label for="update_raz">Обновлять данные раз в :(часов)</label><br>
+                <input type="text" id="update_raz" name="update_raz" value="8"><br><br>
+                <label for="update_pr">Цены менять не чаще (раз в день)</label><br>
+                <input type="text" id="update_pr" name="update_pr" value="1"><br><br>
+                <label for="artcheck">Любой артикул с остатком:</label><br>
+                <input type="text" id="artcheck" name="artcheck" oninput="checkInputs()" disabled><br><br>
+            </div>
+            <input type="button" value="Сохранить" id="saveButton" onclick="submitForm()" disabled>
+            <div id="errorMessage" style="color: red;"></div>
+        </form>
+        </div>
+      </div>
+      
+</div>
+
+
+
+
+<!-- Модальное окно -->
+<div id="cabinetModal" class="modalinfo" style="display: none;">
+  <div class="modal-content-info">
+      <span class="close-button" onclick="closeModal()">&times;</span>
+      <h2>Информация о кабинете</h2>
+      <p>Маркетплейс: <span id="modalCabinet"></span></p>
+      <p>Название ИП: <span id="modalIp"></span></p>
+      <p>У вас включены следующие токены</p>
+      {% for i in token %}
+
+        <p>Токен {{ i[0] }}</p>
+      {% endfor %}
+
+  </div>
+</div>
+
+<style>
+  .btn-custom {
+    border: 2px solid #F2F2F1;
+    border-radius: 40px; /* Овальная форма с углом 40 градусов */
+    color: #000000; /* Цвет текста */
+    padding: 10px 20px; /* Отступы внутри кнопки */
+    background-color: transparent; /* Прозрачный фон */
+    transition: background-color 0.3s; /* Плавное изменение фона при наведении */
+    margin: 30px;
+}
+
+.btn-custom:hover {
+    background-color: #7061F0; /* Цвет фона при наведении */
+    color: #FFFFFF; /* Цвет текста при наведении */
+}
+</style>
+
+
+
+<script src="{{ url_for('static', filename='js/mydata.js') }}"></script>
+
+{% endblock %}
