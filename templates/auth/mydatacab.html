@@ -1,0 +1,70 @@
+{% extends 'auth/base_auth.html' %}
+
+{% block title%}
+{{ cabinets[0].ip }}
+{% endblock %}
+
+
+{% block body%}
+<div id="cabinetModal" class="modalinfo" style="display: none;;">
+  <div class="modal-content-info" style="height: 60%;">
+      <span class="close-button" onclick="document.getElementById('cabinetModal').style.display = 'none'">&times; Закрыть</span>
+      <button onclick="down_sebes('{{ cabinets[0].cabinet }}')">Скачать эксель</button>
+      <hr>
+      <hr>
+      <input type="file" id="excelFile" accept=".xlsx, .xls">
+      <button onclick="uploadFile()">Upload</button>
+      <p id="message"></p>
+  </div>
+</div>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/mydata.css') }}">
+<div class="container">
+    <div style="height: 50px;"></div>
+    <h3>Данные кабинета</h3>
+
+    <p id="ipData" data-ip="{{ cabinets[0].ip }}">ИП: {{ cabinets[0].ip }}</p>
+    <p id="mpData" data-mp="{{ cabinets[0].mp }}">Маркетплейс: {{ cabinets[0].mp }}</p>
+    <p id="mpData" data-mp="{{ cabinets[0].mp }}">Код кабинета: {{ cabinets[0].cabinet }}</p>
+    cabinet
+    <br>
+    <h3>Токены</h3>
+    {% if cabinets[0].tokenKontent  %}
+        <p>Контент: ✅</p>
+    {% endif %}
+    {% if cabinets[0].tokenStat  %}
+    <p>Статистика: ✅</p>
+    {% endif %}
+    {% if cabinets[0].tokenPrice  %}
+    <p>Цена и скидки: ✅</p>
+    {% endif %}
+</div>
+<button type="button" onclick="document.getElementById('cabinetModal').style.display = 'block'">Добавиь Себестоимость внутреннюю</button>
+<button type="button" onclick="deletecab()">Удалить кабинет</button>
+<script src="{{ url_for('static', filename='js/mydatacab.js') }}"></script>
+
+
+
+<script>
+function deletecab() {
+  const ipData = document.getElementById('ipData').dataset.ip;
+  const mpData = document.getElementById('mpData').dataset.mp;
+  
+  // Создание объекта данных для отправки, включая новые данные
+  const dataTodel = {
+    "ip": ipData,
+    "mp": mpData
+  };
+  
+  // Отправка данных на сервер
+  fetch('/mydata/deldata', {
+    method: 'POST', // Или другой метод, который ожидается сервером
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(dataTodel),
+  })
+;
+}
+</script>
+{% endblock %}
