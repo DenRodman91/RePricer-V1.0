@@ -1,0 +1,103 @@
+{% extends 'auth/base_auth.html' %}
+
+{% block title%}
+МОИ АРТИКУЛА
+{% endblock %}
+
+
+{% block body%}
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+<!-- Bootstrap JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<h3>Мои Артикула</h3>
+<div class="container mt-3">
+    <input type="text" id="filterInput" placeholder="Фильтр по категории..." class="form-control mb-4">
+    <button id="view-cards" class="btn btn-primary">Карточки</button>
+    <button id="view-rows" class="btn btn-secondary">Строки</button>
+    <div class="row" id="articlesContainer">
+        {% for item in art %}
+        <div class="col-4 col-md-2 mb-2 item-card">
+            <div class="card" style="width: 100%; " data-toggle="modal" data-target="#modal{{ loop.index }}">
+                <img src="{{ item[6] }}" class="card-img-top" alt="{{ item[2] }}" style="width: 100px; height: 100px;">
+                <div class="card-body">
+                    <p class="card-title" style="font-size: 12px;">{{ item[4] }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно для каждого товара -->
+        <div class="modal fade" id="modal{{ loop.index }}" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ item[4] }}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <img src="{{ item[6] }}" class="img-fluid" alt="{{ item[2] }}">
+                        <p>Артикул МП: {{ item[1] }}</p>
+                        <p>Артикул Продавца: {{ item[2] }}</p>
+                        <p>Бренд: {{ item[5] }}</p>
+                        <p>Дата создания карточки: {{ item[-1][:10] }}</p>
+                        <p>Кабинет: {{ item[0] }}</p>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<style>
+    /* Стиль для отображения в виде строк */
+.item-row {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 2px;
+}
+</style>
+
+<script>
+    $(document).ready(function() {
+        $('#view-cards').click(function() {
+            // Переключение на вид карточек
+            $('.item-card').removeClass('item-row col-12').addClass('col-4 col-md-2 mb-2');
+            // Здесь вы можете добавить дополнительные стили или классы, специфичные для карточек
+        });
+    
+        $('#view-rows').click(function() {
+            // Переключение на вид строк
+            $('.item-card').removeClass('col-4 col-md-2 mb-2').addClass('item-row col-12');
+            // Здесь вы можете добавить дополнительные стили или классы, специфичные для строк
+        });
+    });
+    </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const filterInput = document.getElementById('filterInput');
+        filterInput.addEventListener('input', function() {
+            const filterValue = this.value.toLowerCase();
+            const cards = document.querySelectorAll('.item-card');
+    
+            cards.forEach(card => {
+                const cardText = card.textContent.toLowerCase(); // Получаем весь текст из карточки
+                if (cardText.includes(filterValue)) {
+                    card.style.display = "";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        });
+    });
+    </script>
+{% endblock %}
